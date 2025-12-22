@@ -1,0 +1,112 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <iomanip>
+#include <cmath>
+#include <sstream>
+
+using namespace std;
+
+string formatPercent(double value) {
+    stringstream ss;
+    ss << fixed << setprecision(2) << value;
+    return ss.str();
+}
+
+vector<string> calculateDebtCost(const vector<double>& data) {
+    double loanAmount = data[0];
+    double annualInterest = data[1];
+    double taxRate = data[2];
+    double additionalExpenses = data[3];
+    
+    vector<string> results;
+    
+    double nominalCost = (annualInterest / loanAmount) * 100.0;
+    results.push_back("Стоимость заемного капитала: " + formatPercent(nominalCost) + "%");
+    
+    double costAfterTax = nominalCost * (1.0 - taxRate);
+    results.push_back("Стоимость после налога: " + formatPercent(costAfterTax) + "%");
+    
+    double additionalCostPercent = (additionalExpenses / loanAmount) * 100.0;
+    double totalCostPercent = nominalCost + additionalCostPercent;
+    double monthlyRate = totalCostPercent / 12.0 / 100.0;
+    double effectiveAnnualRate = (pow(1.0 + monthlyRate, 12) - 1.0) * 100.0;
+    
+    results.push_back("Эффективная ставка: " + formatPercent(effectiveAnnualRate) + "%");
+    
+    return results;
+}
+
+void testExamples() {
+    cout << "Тест Пример 1:" << endl;
+    cout << "Ввод: [1980000, 80000, 0.2, 0.2]" << endl;
+    vector<double> input1 = {1980000, 80000, 0.2, 0.2};
+    vector<string> result1 = calculateDebtCost(input1);
+    cout << "Выход: " << endl;
+    for (const auto& line : result1) {
+        cout << "  \"" << line << "\"" << endl;
+    }
+    
+    cout << "\nТест Пример 2:" << endl;
+    cout << "Ввод: [5000000, 60000, 0.15, 0.25]" << endl;
+    vector<double> input2 = {5000000, 60000, 0.15, 0.25};
+    vector<string> result2 = calculateDebtCost(input2);
+    cout << "Выход: " << endl;
+    for (const auto& line : result2) {
+        cout << "  \"" << line << "\"" << endl;
+    }
+}
+
+void interactiveInput() {
+    vector<double> input(4);
+    
+    cout << "Введите параметры расчета:" << endl;
+    cout << "1. Сумма займа: ";
+    cin >> input[0];
+    
+    cout << "2. Годовые проценты (в рублях): ";
+    cin >> input[1];
+    
+    cout << "3. Налоговая ставка (от 0 до 1): ";
+    cin >> input[2];
+    
+    cout << "4. Дополнительные расходы: ";
+    cin >> input[3];
+    
+    if (input[0] <= 0) {
+        cout << "Ошибка: сумма займа должна быть больше 0" << endl;
+        return;
+    }
+    
+    if (input[2] < 0 || input[2] > 1) {
+        cout << "Ошибка: налоговая ставка должна быть в диапазоне от 0 до 1" << endl;
+        return;
+    }
+    
+    vector<string> results = calculateDebtCost(input);
+    
+    cout << "\nРезультаты расчета:" << endl;
+    for (const auto& line : results) {
+        cout << line << endl;
+    }
+}
+
+int main() {
+    cout << "=== Система оценки стоимости заемного капитала ===" << endl;
+    cout << "1. Запустить тестовые примеры" << endl;
+    cout << "2. Ввести данные вручную" << endl;
+    cout << "Выберите вариант (1 или 2): ";
+    
+    int choice;
+    cin >> choice;
+    
+    if (choice == 1) {
+        testExamples();
+    } else if (choice == 2) {
+        interactiveInput();
+    } else {
+        cout << "Неверный выбор" << endl;
+    }
+    
+    return 0;
+}
