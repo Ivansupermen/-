@@ -30,7 +30,7 @@ int main() {
                 test_calculation();
                 break;
             case 3:
-                cout << "Выход.." << endl;
+                cout << "Выход..." << endl;
                 return 0;
             default:
                 cout << "Ошибка! Выберите 1, 2 или 3." << endl;
@@ -60,7 +60,7 @@ void get_user_input_and_calculate() {
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
 
-    // Вводи годовые проценты
+    // Вводим годовые проценты
     while (true) {
         cout << "Годовые проценты (0 - 1e12): ";
         if (cin >> interest && interest >= 0 && interest <= 1e12) break;
@@ -91,15 +91,19 @@ void get_user_input_and_calculate() {
 }
 
 void calculate_cost(double loan, double interest, double tax, double add_costs) {
-    // 1. Номинальная стоимость заемного капитала
+    // 1. Номинальная стоимость заемного капитала (в процентах)
     double nominal_cost = (interest / loan) * 100;
     
-    // 2. Стоимость после налога
+    // 2. Стоимость после налога (в процентах)
     double after_tax_cost = nominal_cost * (1 - tax);
     
-    // 3. Эффективная годовая ставка с учетом дополнительных расходов
-    // Формула: эффективная ставка = ((interest + add_costs) / loan) * 100
-    double effective_rate = ((interest + add_costs) / loan) * 100;
+    // 3. Эффективная годовая ставка ссучетом дополнительных расходов
+    // effective_rate = ((1 + nominal_cost/100)^1 - 1) * 100%
+    // Сначала считаем базовую эффективную ставку
+    double effective_rate = (pow(1 + nominal_cost / 100, 1) - 1) * 100;
+    
+    // Учитываем дополнительные расходы (как процент от номинальной стоимости)
+    effective_rate += (add_costs / loan) * 100;
 
     cout << fixed << setprecision(2);
     cout << "\n РЕЗУЛЬТАТЫ " << endl;
@@ -111,11 +115,11 @@ void calculate_cost(double loan, double interest, double tax, double add_costs) 
 void test_calculation() {
     cout << "\n ТЕСТИРОВАНИЕ " << endl;
 
-    // Тест 1: [1000000, 80000, 0.2, 0.2]
+    // Тест 1 : [1000000, 80000, 0.2, 0.2]
     cout << "\nТест 1: [1000000, 80000, 0.2, 0.2]" << endl;
     calculate_cost(1000000, 80000, 0.2, 0.2);
 
-    // Тест 2: [500000, 60000, 0.15, 0.25]
+    // Тест 2 : [500000, 60000, 0.15, 0.25]
     cout << "\nТест 2: [500000, 60000, 0.15, 0.25]" << endl;
     calculate_cost(500000, 60000, 0.15, 0.25);
 
